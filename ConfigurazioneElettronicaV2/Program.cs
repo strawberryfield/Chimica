@@ -58,5 +58,7 @@ while (true)
     // calcoliamo la configurazione e la stampiamo
     orbitali.Calcola(Num);
     Console.WriteLine(orbitali.Print());
+    Console.WriteLine();
+    Console.WriteLine(orbitali.PrintSchema());
 }
 #endregion

@@ -46,7 +46,7 @@ namespace Casasoft.ConfigurazioneElettronica
         /// <summary>
         /// Utilizzata durante il calcolo
         /// </summary>
-        private int Riempimento;
+        public int Riempimento { get; private set; }
 
         /// <summary>
         /// Ordine per stampa
@@ -102,6 +102,37 @@ namespace Casasoft.ConfigurazioneElettronica
         /// </summary>
         /// <returns>stringa contenente la sigla di configurazione</returns>
         public string Print() => Riempimento > 0 ? $"{N}{Sottolivello}{Riempimento} " : string.Empty;
+
+        /// <summary>
+        /// Linea per lo schema della configurazione
+        /// </summary>
+        /// <returns></returns>
+        public string TopBottomLine()
+        {
+            string ret = "+";
+            for (int i = 0; i < Capacita / 2; i++)
+            {
+                ret += "--+";
+            }
+            return ret;
+        }
+
+        /// <summary>
+        /// Stampa gli elettroni presenti nell'orbitale
+        /// </summary>
+        /// <returns></returns>
+        public string PrintSchema()
+        {
+            string ret = "|";
+            int sl = Capacita / 2;
+            for (int i = 0; i < sl; i++)
+            {
+                ret += (i < Riempimento ? "^" : " ");
+                ret += (i + sl < Riempimento ? "v" : " ");
+                ret += "|";
+            }
+            return ret;
+        }
     }
 
 }

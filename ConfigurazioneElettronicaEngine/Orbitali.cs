@@ -47,6 +47,9 @@ namespace Casasoft.ConfigurazioneElettronica
             {
                 for (Sottolivelli s = Sottolivelli.s; s <= Sottolivelli.f && (int)s < n; s++)
                 {
+                    if (n >= 6 && s >= Sottolivelli.f) continue;
+                    if (n >= 7 && s >= Sottolivelli.d) continue;
+
                     Orbitale o = new(n, s);
                     o.PrintOrder = PrintOrder;
                     Livelli.Add(o);
@@ -102,20 +105,6 @@ namespace Casasoft.ConfigurazioneElettronica
         }
 
         /// <summary>
-        /// Stampa la configurazione
-        /// </summary>
-        /// <returns>stringa contenente la configurazione in sigle</returns>
-        public string Print()
-        {
-            List<Orbitale> PrintList = Livelli.OrderBy(o => o.PrintOrder).ToList();
-            string ret = string.Empty;
-            foreach (Orbitale o in PrintList)
-                ret += o.Print();
-
-            return ret;
-        }
-
-        /// <summary>
         /// Effettua il calcolo della configurazione
         /// </summary>
         /// <param name="n">Numero atomico</param>
@@ -139,6 +128,75 @@ namespace Casasoft.ConfigurazioneElettronica
         /// <param name="n">numero da controllare</param>
         /// <returns>true se il numero è valido</returns>
         public static bool Accettabile(int n) => n > 0 && n <= 118;
+
+        /// <summary>
+        /// Stampa la configurazione
+        /// </summary>
+        /// <returns>stringa contenente la configurazione in sigle</returns>
+        public string Print()
+        {
+            List<Orbitale> PrintList = Livelli.OrderBy(o => o.PrintOrder).ToList();
+            string ret = string.Empty;
+            foreach (Orbitale o in PrintList)
+                ret += o.Print();
+
+            return ret;
+        }
+
+        /// <summary>
+        /// Stampa lo schema di configurazione
+        /// </summary>
+        /// <returns></returns>
+        public string PrintSchema()
+        {
+            string ret = string.Empty;
+            for (int l = 7; l > 0; l--)
+            {
+                ret += PrintSchemaLivello(l);
+            }
+            return ret;
+        }
+
+        /// <summary>
+        /// Stampa lo schema di un singolo livello
+        /// </summary>
+        /// <param name="l">livello da stampare</param>
+        /// <returns></returns>
+        private string PrintSchemaLivello(int l)
+        {
+            string ret = string.Empty;
+            List<Orbitale> livello = Livelli.FindAll(lo => lo.N == l).OrderBy(o => o.Sottolivello).ToList();
+            decimal totRiempimento = livello.Sum(o => o.Riempimento);
+            if (totRiempimento == 0) return ret;
+
+            string line = LivelloTopBottomLine(livello);
+            ret += line;
+            ret += LivelloDataLine(livello);
+            ret += line;
+            return ret;
+        }
+
+        /// <summary>
+        /// Prepara le linee del livello
+        /// </summary>
+        /// <param name="livello"></param>
+        /// <returns></returns>
+        private string LivelloTopBottomLine(List<Orbitale> livello)
+        {
+            string ret = " ";
+            foreach (Orbitale o in livello)
+                ret += " " + o.TopBottomLine();
+            return $"{ret}\n";
+        }
+
+        private string LivelloDataLine(List<Orbitale> livello)
+        {
+            string ret = livello[0].N.ToString();
+            foreach (Orbitale o in livello)
+                ret += " " + o.PrintSchema();
+            return $"{ret}\n";
+        }
+
     }
 
 }
