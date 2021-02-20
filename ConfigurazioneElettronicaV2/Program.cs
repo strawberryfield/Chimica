@@ -21,6 +21,7 @@ using Casasoft.ConfigurazioneElettronica;
 
 // Inizializza il business object
 Orbitali orbitali = new();
+Elementi elementi = new();
 
 #region --- User interface ---
 Console.WriteLine("\tCONFIGURAZIONE ELETTRONICA");
@@ -56,6 +57,8 @@ while (true)
 
     // Se tutti i controlli precedenti sono andati a buon fine 
     // calcoliamo la configurazione e la stampiamo
+    Elemento e = elementi.TrovaElementoPerNumero(Num);
+    Console.WriteLine(e.Simbolo + " " + e.Nome);
     orbitali.Calcola(Num);
     Console.WriteLine(orbitali.Print());
     Console.WriteLine();

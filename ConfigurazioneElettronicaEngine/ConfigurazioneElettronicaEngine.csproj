@@ -6,4 +6,10 @@
     <AssemblyName>Casasoft.ConfigurazioneElettronicaEngine</AssemblyName>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Update="Elementi.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
