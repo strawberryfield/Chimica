@@ -1,4 +1,4 @@
-﻿// copyright (c) 2020 Roberto Ceccarelli - Casasoft
+﻿// copyright (c) 2021 Roberto Ceccarelli - Casasoft
 // http://strawberryfield.altervista.org 
 // 
 // This is free software: 
@@ -172,7 +172,7 @@ class Orbitali
 
         // creazione livelli
         int PrintOrder = 1;
-        for (int n = 1; n < 10; n++)
+        for (int n = 1; n <= 7; n++)
         {
             for (Sottolivelli s = Sottolivelli.s; s <= Sottolivelli.f && (int)s < n; s++)
             {
@@ -200,7 +200,7 @@ class Orbitali
             }
         }
 
-        for (int n = 2; n < 6; n++)
+        for (int n = 2; n <=5; n++)
         {
             int nc = n;
             for (Sottolivelli s = Sottolivelli.f; s >= Sottolivelli.s; s--)
