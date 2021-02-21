@@ -58,7 +58,8 @@ while (true)
     // Se tutti i controlli precedenti sono andati a buon fine 
     // calcoliamo la configurazione e la stampiamo
     Elemento e = elementi.TrovaElementoPerNumero(Num);
-    Console.WriteLine(e.Simbolo + " " + e.Nome);
+    Console.WriteLine($"{e.Simbolo} {e.Nome}");
+    Console.WriteLine($"Periodo: {e.Periodo}, Gruppo {e.Gruppo}");
     orbitali.Calcola(Num);
     Console.WriteLine(orbitali.Print());
     Console.WriteLine();
