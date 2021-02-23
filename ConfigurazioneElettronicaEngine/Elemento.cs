@@ -16,6 +16,8 @@
 // along with this program.  
 // If not, see <http://www.gnu.org/licenses/>.
 
+using System.Linq;
+
 namespace Casasoft.ConfigurazioneElettronica
 {
     /// <summary>
@@ -25,6 +27,7 @@ namespace Casasoft.ConfigurazioneElettronica
     {
         private int _periodo;
         private int _gruppo;
+        private Costanti.Famiglie _famiglia;
 
         public virtual int NumeroAtomico { get; init; }
         public virtual string Simbolo { get; init; }
@@ -41,10 +44,7 @@ namespace Casasoft.ConfigurazioneElettronica
             NumeroAtomico = numeroAtomico;
             Nome = nome;
             Simbolo = simbolo;
-
-            _periodo = getPeriodo();
-            _gruppo = getGruppo();
-        }
+            init();        }
 
         /// <summary>
         /// Costruisce il record a partire da una riga di CSV
@@ -56,15 +56,30 @@ namespace Casasoft.ConfigurazioneElettronica
             NumeroAtomico = int.Parse(fields[0]);
             Nome = fields[1];
             Simbolo = fields[2];
-
-            _periodo = getPeriodo();
-            _gruppo = getGruppo();
+            init();
         }
 
+        /// <summary>
+        /// Perido (riga) della tavola degli elementi
+        /// </summary>
         public int Periodo => _periodo;
+
+        /// <summary>
+        /// Gruppo (colonna) della tavola degli elementi
+        /// </summary>
         public int Gruppo => _gruppo;
 
-        private int[] periodi = { 1, 3, 11, 19, 37, 55, 87 };
+        /// <summary>
+        /// Famiglia (o classe) di elementi aventi caratteristiche simili
+        /// </summary>
+        public Costanti.Famiglie Famiglia => _famiglia;
+
+        private void init()
+        {
+            _periodo = getPeriodo();
+            _gruppo = getGruppo();
+            _famiglia = getFamiglia();
+        }
 
         /// <summary>
         /// Calcola il periodo
@@ -72,10 +87,10 @@ namespace Casasoft.ConfigurazioneElettronica
         /// <returns></returns>
         private int getPeriodo()
         {
-            int ret = periodi.Length - 1;
+            int ret = Costanti.Periodi.Length - 1;
             for (; ret >= 0; ret--)
             {
-                if (NumeroAtomico >= periodi[ret]) break;
+                if (NumeroAtomico >= Costanti.Periodi[ret]) break;
             }
             return ret + 1;
         }
@@ -93,18 +108,52 @@ namespace Casasoft.ConfigurazioneElettronica
             }
             else if (Periodo == 2 || Periodo == 3)
             {
-                ret = NumeroAtomico - periodi[Periodo - 1] + (NumeroAtomico <= periodi[Periodo - 1] + 1 ? 1 : 11);
+                ret = NumeroAtomico - Costanti.Periodi[Periodo - 1] + (NumeroAtomico <= Costanti.Periodi[Periodo - 1] + 1 ? 1 : 11);
             }
             else if (Periodo == 4 || Periodo == 5)
             {
-                ret = NumeroAtomico - periodi[Periodo - 1] + 1;
+                ret = NumeroAtomico - Costanti.Periodi[Periodo - 1] + 1;
             }
             else
             {
-                ret = NumeroAtomico - periodi[Periodo - 1] + 1;
-                if (ret >= 4 && ret <= 17) ret = 0;
+                ret = NumeroAtomico - Costanti.Periodi[Periodo - 1] + 1;
+                if (ret >= 3 && ret <= 17) ret = 0;
                 else if (ret > 17) ret -= 14;
             }
+            return ret;
+        }
+
+        /// <summary>
+        /// Calcola la famiglia
+        /// </summary>
+        /// <returns></returns>
+        private Costanti.Famiglie getFamiglia()
+        {
+            Costanti.Famiglie ret = Costanti.Famiglie.Non_Definito;
+
+            if (NumeroAtomico >= 113)
+                ret = Costanti.Famiglie.Non_Definito;
+            else if (new[] { 1, 6, 7, 8, 15, 16, 34 }.Contains(NumeroAtomico))
+                ret = Costanti.Famiglie.Non_Metalli;
+            else if (new[] { 13, 31, 49, 50, 81, 82, 83 }.Contains(NumeroAtomico))
+                ret = Costanti.Famiglie.Metalli_Blocco_p;
+            else if (Gruppo == 1)
+                ret = Costanti.Famiglie.Metalli_Alcalini;
+            else if (Gruppo == 2)
+                ret = Costanti.Famiglie.Metalli_AlcalinoTerrosi;
+            else if (Gruppo >= 3 && Gruppo <= 12)
+                ret = Costanti.Famiglie.Metalli_Blocco_d;
+            else if (Gruppo == 0 && Periodo == 6)
+                ret = Costanti.Famiglie.Lantanoidi;
+            else if (Gruppo == 0 && Periodo == 7)
+                ret = Costanti.Famiglie.Attinoidi;
+            else if (Gruppo == 18)
+                ret = Costanti.Famiglie.Gas_Nobili;
+            else if (Gruppo == 17 && Periodo < 6)
+                ret = Costanti.Famiglie.Alogeni;
+            else
+                ret = Costanti.Famiglie.SemiMetalli;
+
             return ret;
         }
     }
